@@ -41,7 +41,7 @@ class ProductQuantizer:
         Codificar el conjunto de vectores X en códigos PQ
         Returns: arreglo numpy de indices (N, M) con indices de centroides.
         """
-        if self.codebooks is []:
+        if len(self.codebooks) == 0:
             raise ValueError(f"! No se tiene codebook definido")
         N, D = X.shape
         codes = np.empty((N, self.M), dtype=np.uint8)
@@ -65,7 +65,7 @@ class ProductQuantizer:
         Decodificar códigos PQ de vuelta a vectores aproximados.
         Returns: arreglo numpy de dimension (N, D)
         """
-        if self.codebooks is []:
+        if len(self.codebooks) == 0:
             raise ValueError(f"! No se tiene codebook definido")
         N = codes.shape[0]
         X_reconstructed = np.zeros((N, self.M * self.Ds), dtype=np.float32)
@@ -82,7 +82,7 @@ class ProductQuantizer:
         Aproximar K-nn mediante cálculo asimétrico de distancia (ADC)
         Returns: Índices de los vecinos más cercanos y sus distancias
         """
-        if self.codebooks is []:
+        if len(self.codebooks) == 0:
             raise ValueError(f"! No se tiene codebook definido")
         N = codes.shape[0]
         distances = np.zeros(N, dtype=np.float32)
