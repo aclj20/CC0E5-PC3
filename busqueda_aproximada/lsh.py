@@ -92,6 +92,19 @@ class LSH:
         # Ordenar candidatos por su distancia real al vector de consulta
         nearest_neighbors = DataFrame({'id': list(candidate_set)})
         candidates = data[np.array(list(candidate_set)), :]
-        nearest_neighbors['distance'] = pairwise_distances(candidates, query_vec, metric='cosine').flatten()
+        nearest_neighbors['distance'] = pairwise_distances(candidates, query_vec.reshape(1, -1), metric='cosine').flatten()
 
         return nearest_neighbors.nsmallest(k, 'distance')
+
+if __name__ == "__main__":
+
+    # Generar 10k vectores aleatorios de longitud 64
+    data = np.random.randn(10000, 64).astype(np.float32)
+    
+    lsh_model = LSH(data)
+    # Número de vectores aleatorios 
+    lsh_model.train(num_vector=15)
+
+    # Consultar los k vecinos más cercanos a data[1] en un radio de hasta 10
+    result = lsh_model.query(data[1, :], k=5, max_search_radius=10)
+    print(result.reset_index(drop=True))
