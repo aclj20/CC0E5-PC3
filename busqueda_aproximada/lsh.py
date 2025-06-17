@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import pairwise_distances
 
 class LSH:
     def __init__(self, data):
+        # La data se almacena en un vector mxn, donde m es la cantidad de datos y n la longitud del vector que las representa
         self.data = data
         self.model = None
 
@@ -14,6 +15,7 @@ class LSH:
         return np.random.randn(dim, num_vector)
 
     def train(self, num_vector, seed=None):
+        # Obtener la longitud n de los vectores 
         dim = self.data.shape[1]
         if seed is not None:
             np.random.seed(seed)
