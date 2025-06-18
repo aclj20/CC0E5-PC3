@@ -12,7 +12,8 @@ class LSH:
         self.model = None
 
     def __generate_random_vectors(self, num_vector, dim):
-        return np.random.randn(dim, num_vector)
+        vectors = np.random.randn(dim, num_vector)
+        return vectors
 
     def train(self, num_vector, seed=None):
         # Obtener la longitud n de los vectores 
@@ -51,7 +52,6 @@ class LSH:
         num_vector = self.model['num_vector']
         powers_of_two = 1 << np.arange(num_vector - 1, -1, -1)
 
-        # Permitir al usuario proporcionar un conjunto inicial de candidatos
         candidate_set = copy(initial_candidates)
 
         for different_bits in combinations(range(num_vector), search_radius):
@@ -79,20 +79,23 @@ class LSH:
 
         bin_index_bits = (query_vec.dot(random_vectors) >= 0).flatten()
 
-        candidate_set = set()
+        candidate_set = set(initial_candidates)
         # Buscar en buckets vecinos y recolectar candidatos
         for search_radius in range(max_search_radius + 1):
-            candidate_set = self.__search_nearby_bins(
-                bin_index_bits,
-                table,
-                search_radius,
-                initial_candidates=initial_candidates
+            candidate_set.update( self.__search_nearby_bins(
+                    bin_index_bits,
+                    table,
+                    search_radius,
+                    candidate_set
+                )
             )
 
         # Ordenar candidatos por su distancia real al vector de consulta
-        nearest_neighbors = DataFrame({'id': list(candidate_set)})
+        if not list(candidate_set):
+            return DataFrame(columns=["id", "distance"])
         candidates = data[np.array(list(candidate_set)), :]
-        nearest_neighbors['distance'] = pairwise_distances(candidates, query_vec.reshape(1, -1), metric='cosine').flatten()
+        nearest_neighbors = DataFrame({'id': list(candidate_set)})
+        nearest_neighbors['distance'] = pairwise_distances(candidates, query_vec.reshape(1, -1), metric='euclidean').flatten()
 
         return nearest_neighbors.nsmallest(k, 'distance')
 
