@@ -7,13 +7,13 @@ from util.data_manager import DataManager
 import matplotlib.pyplot as plt
 
 SIZES = [
+    300,
     500,
     1000,
     3000,
     4000,
     5000,
     10000,
-    100000
 ]
 
 def get_data(N=100_000, D=64, seed=42):
@@ -37,7 +37,7 @@ def compare_recall():
     opq_recalls = []
     lsh_recalls = []
     dm = DataManager()
-    k = 5
+    k = 10
     n_queries = 20
 
     for size in SIZES:
@@ -66,10 +66,10 @@ def compare_recall():
 
         # LSH
         lsh = LSH(X)
-        lsh.train(num_vector=16)
+        lsh.train(num_vector=8)
         lsh_results = []
         for q in queries:
-            df = lsh.query(q, k=k, max_search_radius=2)
+            df = lsh.query(q, k=k, max_search_radius=4)
             if len(df) == 0:
                 # If there are no candidates, fill with dummy indices (e.g. -1)
                 lsh_results.append([-1] * k)
@@ -93,12 +93,12 @@ def compare_recall():
 
     plt.xticks(x, [str(s) for s in SIZES])
     plt.xlabel("Tamaño de los datos (# Vectores)")
-    plt.ylabel("Recall@5")
-    plt.title("Recall@5 para PQ, OPQ y LSH")
+    plt.ylabel(f"Recall@{k}")
+    plt.title(f"Recall@{k} para PQ, OPQ y LSH")
     plt.legend()
     plt.grid(axis='y')
     plt.tight_layout()
-    plt.savefig("plots/recall_comparison.png")
+    plt.savefig(f"plots/recall@{k}_comparison.png")
 
 if __name__ == "__main__":
     compare_recall()
