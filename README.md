@@ -64,7 +64,7 @@ ProductQuantizer(M=4, Ks=256)
 
 * `ValueError`: Si `M` o `Ks` son menores o iguales a 0.
 
-#### 🔧 `fit(X)`
+#### `fit(X)`
 
 ```python
 fit(X: np.ndarray) -> None
